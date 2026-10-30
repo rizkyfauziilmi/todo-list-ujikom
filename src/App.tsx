@@ -1,13 +1,11 @@
 import { SquarePen, Trash } from "lucide-react";
-import { useState, type SubmitEvent } from "react";
+import { useState, useRef, type SubmitEvent } from "react";
 
 interface Todo {
   id: number;
   title: string;
   status: "belum" | "selesai";
 }
-
-let currentId = 2;
 
 const initialTodos: Todo[] = [
   { id: 1, title: "Belajar PHP", status: "belum" },
@@ -19,6 +17,10 @@ function App() {
   const [showModal, setShowModal] = useState(false);
   const [title, setTitle] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
+
+  const nextId = useRef(
+    Math.max(...initialTodos.map((todo) => todo.id), 0) + 1,
+  );
 
   /**
    * Menangani proses submit form untuk menambahkan atau mengubah todo.
@@ -48,7 +50,7 @@ function App() {
     setTodos((prev) => [
       ...prev,
       {
-        id: currentId++,
+        id: nextId.current++,
         title: title.trim(),
         status: "belum",
       },
