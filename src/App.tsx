@@ -1,5 +1,5 @@
 import { SquarePen, Trash } from "lucide-react";
-import { useState, useRef, type SubmitEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 
 interface Todo {
   id: number;
@@ -18,14 +18,10 @@ function App() {
   const [title, setTitle] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
 
-  const nextId = useRef(
-    Math.max(...initialTodos.map((todo) => todo.id), 0) + 1,
-  );
-
   /**
    * Menangani proses submit form untuk menambahkan atau mengubah todo.
    *
-   * @param e - Event submit form.
+   * @param e Event submit form.
    */
   function handleSubmit(e: SubmitEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -44,24 +40,28 @@ function App() {
   /**
    * Menambahkan todo baru ke dalam daftar.
    *
-   * @param title - Judul todo yang akan ditambahkan.
+   * @param title Judul todo yang akan ditambahkan.
    */
   function addTodo(title: string) {
-    setTodos((prev) => [
-      ...prev,
-      {
-        id: nextId.current++,
-        title: title.trim(),
-        status: "belum",
-      },
-    ]);
+    setTodos((prev) => {
+      const newId =
+        prev.length > 0 ? Math.max(...prev.map((todo) => todo.id)) + 1 : 1;
+      return [
+        ...prev,
+        {
+          id: newId,
+          title: title.trim(),
+          status: "belum",
+        },
+      ];
+    });
   }
 
   /**
    * Mengubah judul todo berdasarkan ID.
    *
-   * @param id - ID todo yang akan diubah.
-   * @param title - Judul baru todo.
+   * @param id ID todo yang akan diubah.
+   * @param title Judul baru todo.
    */
   function updateTitleName(id: number, title: string) {
     setTodos((prev) =>
@@ -83,7 +83,7 @@ function App() {
   /**
    * Membuka modal edit dan mengisi form dengan data todo.
    *
-   * @param todo - Data todo yang akan diedit.
+   * @param todo Data todo yang akan diedit.
    */
   function handleEdit(todo: Todo) {
     setEditingId(todo.id);
@@ -94,7 +94,7 @@ function App() {
   /**
    * Menghapus todo berdasarkan ID.
    *
-   * @param id - ID todo yang akan dihapus.
+   * @param id ID todo yang akan dihapus.
    */
   function handleDelete(id: number) {
     setTodos((prev) => prev.filter((todo) => todo.id !== id));
@@ -103,8 +103,8 @@ function App() {
   /**
    * Mengubah status todo berdasarkan kondisi checkbox.
    *
-   * @param id - ID todo yang statusnya akan diubah.
-   * @param checked - Kondisi checkbox.
+   * @param id ID todo yang statusnya akan diubah.
+   * @param checked Kondisi checkbox.
    */
   function handleToggle(id: number, checked: boolean) {
     setTodos((prev) =>
